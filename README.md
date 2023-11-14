@@ -6,7 +6,7 @@ Outlier detection aims to find objects that behave differently from the majority
 
 <figure align=center>
 <img src="MFIOD_framework.png" height = "298" alt="" width="1024" align=center>
-<figcaption>MFIOD's overall framework </figcaption>
+<figcaption align=center>MFIOD's overall framework </figcaption>
 </figure>
 
 ## Environment
