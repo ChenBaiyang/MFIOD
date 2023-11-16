@@ -1,5 +1,5 @@
 # MFIOD
-Baiyang Chen, Yongxiang Li, Dezhong Peng, Hongmei Chen, and Zhong Yuan*, "Fusing multi-scale fuzzy information to detect outliers," ([PDF](2024-MFIOD-PDF.pdf)) Information Fusion, vol. 103, p. 102133, 8 November 2023, DOI: 10.1016/j.inffus.2023.102133
+Baiyang Chen, Yongxiang Li, Dezhong Peng, Hongmei Chen, and Zhong Yuan*, "[Fusing multi-scale fuzzy information to detect outliers](https://www.sciencedirect.com/science/article/pii/S1566253523004499)," ([PDF](2024-MFIOD-PDF.pdf)) Information Fusion, vol. 103, p. 102133, 8 November 2023, DOI: 10.1016/j.inffus.2023.102133
 
 
 ## Abstract
