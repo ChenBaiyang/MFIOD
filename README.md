@@ -1,5 +1,6 @@
 # MFIOD
-Codes and datasets for the paper "Fusing multi-scale fuzzy information to detect outliers" ([PDF](2024-MFIOD-PDF.pdf)) published in Information Fusion, 2024.
+Baiyang Chen, Yongxiang Li, Dezhong Peng, Hongmei Chen, and Zhong Yuan*, "Fusing multi-scale fuzzy information to detect outliers," ([PDF](2024-MFIOD-PDF.pdf)) Information Fusion, vol. 103, p. 102133, 8 November 2023, DOI: 10.1016/j.inffus.2023.102133
+
 
 ## Abstract
 Outlier detection aims to find objects that behave differently from the majority of the data. Existing unsupervised approaches often process data with a single scale, which may not capture the multi-scale nature of the data. In this paper, we propose a novel information fusion model based on multi-scale fuzzy granules and an unsupervised outlier detection algorithm with the fuzzy rough set theory. First, a multi-scale information fusion model is formulated based on fuzzy granules. Then we employ fuzzy approximations to define the outlier factor of multi-scale fuzzy granules centered at each data point. Finally, the outlier score is calculated by aggregating the outlier factors of a set of multi-scale fuzzy granules.
@@ -48,7 +49,7 @@ If you find the code or datasets useful in your research, please consider citing
 ```
 or:
 
-B. Chen, Y. Li, D. Peng, H. Chen, and Z. Yuan, "Fusing multi-scale fuzzy information to detect outliers," Information Fusion, vol. 103, p. 102133, doi: 10.1016/j.inffus.2023.102133
+Baiyang Chen, Yongxiang Li, Dezhong Peng, Hongmei Chen, and Zhong Yuan, "Fusing multi-scale fuzzy information to detect outliers," Information Fusion, vol. 103, p. 102133, doi: 10.1016/j.inffus.2023.102133
 
 ## Contact
 If you have any question, please contact farstars@qq.com
