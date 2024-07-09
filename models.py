@@ -2,13 +2,12 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 class MFIOD(object):
-    def __init__(self, data, nominals, lambs=[0.3, 0.5], n_bins=20):
+    def __init__(self, data, nominals, lambs=None, n_bins=20):
         self.data = data
         self.nominals = nominals
-        self.lambs = lambs
         self.__find_bins__(n_bins=n_bins)
         self.__make_relation_matrix_for_bins__()
-        self.__multi_scale_granule__()
+        self.__multi_scale_granule__(lambs=lambs)
 
     def __find_bins__(self, n_bins=20):
         data_std = self.data.std(0)
@@ -40,6 +39,7 @@ class MFIOD(object):
             else:
                 dist_B = np.sqrt(np.square(dist_matrix[bin]).sum(axis=0)) / np.sqrt(len(bin))
                 self.dist_matrix[idx] = dist_B
+        self.ave_dist_bins = self.dist_matrix.mean((1, 2))
         self.dist_matrix = 1 - self.dist_matrix
         self.relation_matrix = self.dist_matrix
         # assert self.relation_matrix.min() > -1e-6 and self.relation_matrix.max() < 1 + 1e-6, "Relation matrix error!"
@@ -48,9 +48,27 @@ class MFIOD(object):
         self.R_P = 1 - dist_P
         # print('Distance matrices have been built...')
 
-    def __multi_scale_granule__(self):
+    def grid_search(self):
+        pass
+
+    def __multi_scale_granule__(self, lambs):
+        if lambs == 'Default' or lambs is None:
+            # Choose the three smallest ave_distance as default parameters
+            lambs_new = 1 - self.ave_dist_bins
+            lambs_new.sort()
+            self.lambs = lambs_new[:3].round(3)
+            print(self.lambs)
+        elif lambs == 'Recommendation':
+            exit("Grid search not implemented...")
+            assert self.labels is not None, 'Grid search requires data labels'
+            self.lambs = self.grid_search()
+        else:
+            # Assume parameters are given in a list, e.g., [0.1, 0.2, 0.3]
+            # print("Using given parameters:", self.lambs)
+            assert 0 < min(lambs) and 1 > max(lambs), 'Parameters not allowed...'
+            self.lambs = lambs
+
         for i in range(len(self.bins)):
-            # print(self.relation_matrix[i][0][:10])
             granules = np.tile(self.relation_matrix[i][np.newaxis,:,:], (len(self.lambs),1,1))
             cards = np.zeros((len(self.lambs), self.relation_matrix.shape[-1]))
             for idx, lamb in enumerate(self.lambs):

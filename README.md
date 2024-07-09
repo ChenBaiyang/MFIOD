@@ -16,7 +16,7 @@ Outlier detection aims to find objects that behave differently from the majority
 * scikit-learn=1.2
 
 ## Usage
-To reproduce the results in paper:
+To reproduce the results in the paper:
 ```
 python run_reproduce.py
 ```
@@ -25,7 +25,14 @@ To reproduce the examples in paper:
 ```
 python run_example.py
 ```
-To run MFIOD on customised datastes:
+To run MFIOD on customised datastes with default parameters:
+```
+# Assume dataset be saved in a Numpy npz file with n samples and m dimensions
+# An m dimensional bool vector be given to indicate: True=Nominal attribute, False=Numerical attribute; if not provided, all attributes are treated as numerical.
+
+python run_customs_default_paras.py
+```
+To run MFIOD on customised datastes with parameter tuning:
 ```
 To be updated later.
 ```
