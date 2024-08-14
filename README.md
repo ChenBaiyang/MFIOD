@@ -58,4 +58,4 @@ or:
 Baiyang Chen, Yongxiang Li, Dezhong Peng, Hongmei Chen, and Zhong Yuan, "Fusing multi-scale fuzzy information to detect outliers," Information Fusion, vol. 103, p. 102133, doi: 10.1016/j.inffus.2023.102133
 
 ## Contact
-If you have any questions, please contact farstars@qq.com
+If you have any questions, please contact farstars@qq.com.
