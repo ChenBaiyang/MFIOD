@@ -21,18 +21,18 @@ To reproduce the results in the paper:
 python run_reproduce.py
 ```
 
-To reproduce the examples in paper:
+To reproduce the examples in the paper:
 ```
 python run_example.py
 ```
-To run MFIOD on customised datastes with default parameters:
+To run MFIOD on customized datastes with default parameters:
 ```
-# Assume dataset be saved in a Numpy npz file with n samples and m dimensions
+# Assume the dataset be saved in a Numpy npz file with n samples and m dimensions
 # An m dimensional bool vector be given to indicate: True=Nominal attribute, False=Numerical attribute; if not provided, all attributes are treated as numerical.
 
 python run_customs_default_paras.py
 ```
-To run MFIOD on customised datastes with parameter tuning:
+To run MFIOD on customized datastes with parameter tuning:
 ```
 To be updated later.
 ```
@@ -50,8 +50,7 @@ If you find the code or datasets useful in your research, please consider citing
     pages = {102133},
     year = {2024},
     issn = {1566-2535},
-    doi = {https://doi.org/10.1016/j.inffus.2023.102133},
-    url = {https://www.sciencedirect.com/science/article/pii/S1566253523004499}
+    doi = {10.1016/j.inffus.2023.102133},
     }
 ```
 or:
@@ -59,4 +58,4 @@ or:
 Baiyang Chen, Yongxiang Li, Dezhong Peng, Hongmei Chen, and Zhong Yuan, "Fusing multi-scale fuzzy information to detect outliers," Information Fusion, vol. 103, p. 102133, doi: 10.1016/j.inffus.2023.102133
 
 ## Contact
-If you have any question, please contact farstars@qq.com
+If you have any questions, please contact farstars@qq.com
