@@ -39,7 +39,7 @@ class MFIOD(object):
             # print("Using given parameters:", self.lambs)
             assert 0 < min(lambs) and 1 > max(lambs), 'Parameters not allowed...'
             self.lambs = lambs
-            self.__make_relation_matrix_for_bins__()
+            self.__make_relation_matrix_for_bins__v0()
 
         self.__multi_scale_granule__(self.lambs)
 
@@ -56,15 +56,13 @@ class MFIOD(object):
         # print('Number of bins:', len(self.bins))
 
 
-    def __make_relation_matrix_for_bins__(self, X=None):
+    def __make_relation_matrix_for_bins__v0(self, X=None):
         if X is None:
             X = self.data
         n, m = X.shape
         X = X.T.unsqueeze(-1)
-        # dist_matrix = t.cdist(X.cpu(), X.cpu(), p=1).to(device)  # Shape (m, n, n)
         dist_matrix = t.cdist(X, X, p=1).float() # Shape (m, n, n)
 
-        # assert (dist_matrix > 1 + 1e-6).sum() == 0
         if self.nominals.sum() > 0:
             dist_matrix[self.nominals] = (dist_matrix[self.nominals] > 1e-6).float()
         self.dist_matrix = t.zeros((len(self.bins),n,n), dtype=t.float32).to(device)
@@ -76,12 +74,38 @@ class MFIOD(object):
                 self.dist_matrix[idx] = dist_B
         self.ave_dist_bins = self.dist_matrix.mean((1, 2))
         self.dist_matrix = 1 - self.dist_matrix
-        self.relation_matrix = self.dist_matrix
-        # assert self.relation_matrix.min() > -1e-6 and self.relation_matrix.max() < 1 + 1e-6, "Relation matrix error!"
-
+        self.rel_dist_mat = self.dist_matrix
+        # assert self.rel_dist_mat.min() > -1e-6 and self.rel_dist_mat.max() < 1 + 1e-6, "Relation matrix error!"
         dist_P = t.sqrt(t.square(dist_matrix).sum(dim=0)) / np.sqrt(m)
         self.rel_mat_P = 1 - dist_P
-        # print('Distance matrices have been built...')
+
+    def __make_relation_matrix_for_bins__(self, X=None):
+        if X is None:
+            X = self.data
+        n, m = X.shape
+        X = X.T.unsqueeze(-1)
+
+        self.rel_dist_mat = t.zeros((len(self.bins),n,n), dtype=t.float32).to(device)
+        for idx, bin in enumerate(self.bins):
+            if len(bin) == 1:
+                bin = bin[0]
+                temp = X[bin]
+                self.rel_dist_mat[idx] = t.cdist(temp, temp, p=1).float()
+                if self.nominals[bin]:
+                    self.rel_dist_mat[idx] = (self.rel_dist_mat[idx] > 1e-5).float()
+            else:
+                for j, bin_ in enumerate(bin):
+                    temp = X[bin_]
+                    mat = t.cdist(temp, temp, p=1).float()
+                    if self.nominals[bin_]:
+                        mat = (mat > 1e-5).float()
+                    self.rel_dist_mat[idx] += t.square(mat)
+                self.rel_dist_mat[idx] = t.sqrt(self.rel_dist_mat[idx])
+                self.rel_dist_mat[idx] /= np.sqrt(len(bin))
+
+        self.ave_dist_bins = self.rel_dist_mat.mean((1, 2))
+        self.rel_mat_P = 1 - t.sqrt(t.square(self.rel_dist_mat).sum(dim=0)) / np.sqrt(m)
+        self.rel_dist_mat = 1 - self.rel_dist_mat
 
 
     def grid_search(self, train_X, train_y, paras):
@@ -104,27 +128,27 @@ class MFIOD(object):
         if lambs is None:
             lambs = self.lambs
         for i in range(len(self.bins)):
-            granules = self.relation_matrix[i].unsqueeze(0).repeat(len(lambs), 1, 1)
-            cards = t.zeros((len(lambs), self.relation_matrix.shape[-1])).to(device)
+            granules = self.rel_dist_mat[i].unsqueeze(0).repeat(len(lambs), 1, 1)
+            cards = t.zeros((len(lambs), self.rel_dist_mat.shape[-1])).to(device)
             for idx, lamb in enumerate(lambs):
                 granules[idx][granules[idx] < lamb] = 0
                 cards[idx] = granules[idx].sum(dim=0)
             cards = cards/cards.sum(dim=0)
-            self.relation_matrix[i] = (granules * cards.unsqueeze(-1)).sum(0)
-            # print(self.relation_matrix[i][0][:10])
-        # assert self.relation_matrix.min() > -1e-6 and self.relation_matrix.max() < 1 + 1e-6, "Relation matrix error!"
+            self.rel_dist_mat[i] = (granules * cards.unsqueeze(-1)).sum(0)
+            # print(self.rel_dist_mat[i][0][:10])
+        # assert self.rel_dist_mat.min() > -1e-6 and self.rel_dist_mat.max() < 1 + 1e-6, "Relation matrix error!"
         # print('Multi-scale relation matrices have been built...')
 
 
     def detection(self):
         # print('Calculation Appr. Acc...')
-        n_bins, n, _ = self.relation_matrix.shape
+        n_bins, n, _ = self.rel_dist_mat.shape
         weight = t.zeros((n, n_bins), dtype=t.float32).to(device)
         Acc_Appr = t.zeros((n, n_bins), dtype=t.float32).to(device)
 
         rel_mat_P_Negatvie = 1 - self.rel_mat_P
         for bin_idx in range(n_bins):
-            unique_granules, indices = t.unique(self.relation_matrix[bin_idx], dim=0, return_inverse=True)
+            unique_granules, indices = t.unique(self.rel_dist_mat[bin_idx], dim=0, return_inverse=True)
             for i, granule_i in enumerate(unique_granules):
                 unique_granule_idx = t.where(indices == i)[0]
 
