@@ -1,29 +1,14 @@
-import os
-import time
+import os, time
 import numpy as np
+from sklearn.preprocessing import minmax_scale
 from models import MFIOD, evaluation_Pt_auc_pr
+
 
 if __name__ == "__main__":
     data_dir = 'data/'
     dataset_list = os.listdir(data_dir)
-    result_file_name = 'result_MFIOD_reproduce.csv'
+    result_file_name = 'result_MFIOD_default.csv'
     open(result_file_name, 'w').write('dataset,model,para,Pt,auc,pr,time\n')
-
-    paras =   [[0.95],
-               [0.2, 0.75],
-               [0.9],
-               [0.05, 0.9, 0.95],
-               [0.1],
-               [0.8, 0.9, 0.9],
-               [0.5],
-               [0.55],
-               [0.4],
-               [0.65, 0.65, 0.95],
-               [0.85, 0.9, 0.9],
-               [0.55],
-               [0.4],
-               [0.75],
-               [0.3, 0.7]]
 
     for idx, dataset in enumerate(dataset_list):
         d = np.load(data_dir + dataset)
@@ -39,17 +24,22 @@ if __name__ == "__main__":
 
         print("Dataset:\t{}\t\tShape:{}\t#Outlier:{}\t#Nominals:{}".format(dataset[:-4], (n, m), label.sum(), nominals.sum()))
 
-        lambs = paras[idx]
-        print("\tLambdas:{}".format(lambs), end='\t')
+        # Min-max scale on numerical attributes
+        numericals = np.logical_not(nominals)
+        if numericals.sum() > 0:
+            data[:, numericals] = minmax_scale(data[:, numericals])
 
+        # run with default parameter
         t0 = time.time()
-        out_scores = MFIOD(data, nominals, lambs=lambs).detection()
+        model = MFIOD(data, nominals, lambs='Default')
+        out_scores = model.detection()
         t1 = time.time()
 
         Pt, auc, pr = evaluation_Pt_auc_pr(out_scores, label)
-        print('Pt:', round(Pt*100,3), 'AUC:', round(auc*100,3), 'Pr:', round(pr*100,3), "Time:", round(t1-t0,1))
+        print("\tLambdas:{}\t".format(model.lambs), 'Pt:', round(Pt*100,3), 'AUC:', round(auc*100,3), 'Pr:', round(pr*100,3), "Time:", round(t1-t0,1))
 
         # save to csv file
-        scores = [dataset[:-4], 'MFIOD', str(lambs).replace(',', ' '), str(Pt)[:8], str(auc)[:8], str(pr)[:8], str(t1-t0)]
+        scores = [dataset[:-4], 'MFIOD', str(model.lambs).replace(',', ' '), str(Pt)[:8], str(auc)[:8], str(pr)[:8], str(t1-t0)]
         open(result_file_name, 'a').write(','.join(scores) + '\n')
+
 
