@@ -65,6 +65,8 @@ class MFIOD(object):
 
         if self.nominals.sum() > 0:
             dist_matrix[self.nominals] = (dist_matrix[self.nominals] > 1e-6).float()
+        self.rel_mat_P = 1 - t.sqrt(t.square(dist_matrix).sum(dim=0)) / np.sqrt(m)
+
         self.dist_matrix = t.zeros((len(self.bins),n,n), dtype=t.float32).to(device)
         for idx, bin in enumerate(self.bins):
             if len(bin) == 1:
@@ -73,11 +75,9 @@ class MFIOD(object):
                 dist_B = t.sqrt(t.square(dist_matrix[bin]).sum(dim=0)) / np.sqrt(len(bin))
                 self.dist_matrix[idx] = dist_B
         self.ave_dist_bins = self.dist_matrix.mean((1, 2))
-        self.dist_matrix = 1 - self.dist_matrix
+        self.dist_matrix *= -1
+        self.dist_matrix +=  1
         self.rel_dist_mat = self.dist_matrix
-        # assert self.rel_dist_mat.min() > -1e-6 and self.rel_dist_mat.max() < 1 + 1e-6, "Relation matrix error!"
-        dist_P = t.sqrt(t.square(dist_matrix).sum(dim=0)) / np.sqrt(m)
-        self.rel_mat_P = 1 - dist_P
 
     def __make_relation_matrix_for_bins__(self, X=None):
         if X is None:
@@ -105,7 +105,8 @@ class MFIOD(object):
 
         self.ave_dist_bins = self.rel_dist_mat.mean((1, 2))
         self.rel_mat_P = 1 - t.sqrt(t.square(self.rel_dist_mat).sum(dim=0)) / np.sqrt(m)
-        self.rel_dist_mat = 1 - self.rel_dist_mat
+        self.rel_dist_mat *= -1
+        self.rel_dist_mat +=  1
 
 
     def grid_search(self, train_X, train_y, paras):
