@@ -25,16 +25,17 @@ To reproduce the examples in the paper:
 ```
 python run_example.py
 ```
-To run MFIOD on customized datastes with default parameters:
+To run MFIOD with default parameters:
 ```
 # Assume the dataset be saved in a Numpy npz file with n samples and m dimensions
 # An m dimensional bool vector be given to indicate: True=Nominal attribute, False=Numerical attribute; if not provided, all attributes are treated as numerical.
 
-python run_customs_default_paras.py
+python run_MFIOD_default.py
 ```
-To run MFIOD on customized datastes with parameter tuning:
+To run MFIOD with parameter tuning:
+We only tune the combination of three scale parameters $\lambda$ among {0.1, 0.3, 0.5, 0.7, 0.9}.
 ```
-To be updated later.
+python run_MFIOD_GridSearch.py
 ```
 
 
