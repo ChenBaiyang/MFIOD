@@ -12,7 +12,7 @@ Outlier detection aims to find objects that behave differently from the majority
 
 ## Environment
 * python=3.8
-* numpy=1.23
+* Pytorch=1.8.2
 * scikit-learn=1.2
 
 ## Usage
