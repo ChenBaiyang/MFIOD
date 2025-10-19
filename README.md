@@ -32,11 +32,6 @@ To run MFIOD with default parameters:
 
 python run_MFIOD_default.py
 ```
-To run MFIOD with parameter tuning:
-We only tune the combination of three scale parameters $\lambda$ among {0.1, 0.3, 0.5, 0.7, 0.9}.
-```
-python run_MFIOD_GridSearch.py
-```
 
 
 
