@@ -113,11 +113,14 @@ class MFIOD(object):
         import itertools as its
         train_X = t.from_numpy(train_X).float().to(device)
         self.__make_relation_matrix_for_bins__(train_X)
+        rel_dist_mat_bak = self.rel_dist_mat.clone()
 
         records = dict()
         for lamb1,lamb2,lamb3 in its.combinations(paras, 3):
             self.__multi_scale_granule__([lamb1,lamb2,lamb3])
             out_scores = self.detection()
+            self.rel_dist_mat = rel_dist_mat_bak.clone()
+
             auc = roc_auc_score(train_y, out_scores)
             pr = average_precision_score(y_true=train_y, y_score=out_scores, pos_label=1)
             records[(lamb1,lamb2,lamb3)] = auc + pr
@@ -136,8 +139,6 @@ class MFIOD(object):
                 cards[idx] = granules[idx].sum(dim=0)
             cards = cards/cards.sum(dim=0)
             self.rel_dist_mat[i] = (granules * cards.unsqueeze(-1)).sum(0)
-            # print(self.rel_dist_mat[i][0][:10])
-        # assert self.rel_dist_mat.min() > -1e-6 and self.rel_dist_mat.max() < 1 + 1e-6, "Relation matrix error!"
         # print('Multi-scale relation matrices have been built...')
 
 
