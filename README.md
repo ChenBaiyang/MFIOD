@@ -21,10 +21,6 @@ To reproduce the results in the paper:
 python run_reproduce.py
 ```
 
-To reproduce the examples in the paper:
-```
-python run_example.py
-```
 To run MFIOD with default parameters:
 ```
 # Assume the dataset be saved in a Numpy npz file with n samples and m dimensions
